@@ -39,6 +39,9 @@
             .create(document.querySelector('#body'), {
                 simpleUpload: {
                     uploadUrl: '/editor-uploads',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    }
                 }
             })
             .catch(error => {
