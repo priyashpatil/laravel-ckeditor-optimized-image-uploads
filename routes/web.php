@@ -9,3 +9,5 @@ Route::get('/', function () {
 Route::get('/blog-posts', [\App\Http\Controllers\BlogPostController::class, 'index'])->name('blog-posts.index');
 Route::get('/blog-posts/{blogPost}', [\App\Http\Controllers\BlogPostController::class, 'edit'])->name('blog-posts.edit');
 Route::put('/blog-posts/{blogPost}', [\App\Http\Controllers\BlogPostController::class, 'update']);
+
+Route::post('/editor-uploads', \App\Http\Controllers\EditorImageUploadController::class);
