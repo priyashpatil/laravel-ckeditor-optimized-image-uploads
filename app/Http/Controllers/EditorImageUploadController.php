@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
 
 class EditorImageUploadController extends Controller
 {
@@ -20,7 +22,10 @@ class EditorImageUploadController extends Controller
             ], 400);
         }
 
-        $path = $request->file('upload')->store('uploads', ['disk' => 'public']);
+        $filename = Str::ulid() . '.webp';
+        $path = 'uploads/' . $filename;
+        $defaultImage = Image::make($request->file('upload'))->encode('webp', 80);
+        Storage::disk('public')->put($path, (string)$defaultImage);
         $imageURL = Storage::disk('public')->url($path);
 
         return response()->json(['url' => $imageURL]);
