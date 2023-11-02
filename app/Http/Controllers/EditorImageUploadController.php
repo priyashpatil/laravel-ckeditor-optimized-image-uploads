@@ -22,12 +22,34 @@ class EditorImageUploadController extends Controller
             ], 400);
         }
 
+        $defaultImage = Image::make($request->file('upload'));
+        $imageWidth = $defaultImage->width();
+        $imageSizes = [800, 1024, 1920];
+
         $filename = Str::ulid() . '.webp';
         $path = 'uploads/' . $filename;
-        $defaultImage = Image::make($request->file('upload'))->encode('webp', 80);
+        $defaultImage = $defaultImage->encode('webp', 80);
         Storage::disk('public')->put($path, (string)$defaultImage);
-        $imageURL = Storage::disk('public')->url($path);
+        $urls['default'] = Storage::disk('public')->url($path);
 
-        return response()->json(['url' => $imageURL]);
+        foreach ($imageSizes as $size) {
+            if ($imageWidth < $size) {
+                break;
+            }
+
+            $image = Image::make($request->file('upload'))
+                ->resize($size, null, fn($constraint) => $constraint->aspectRatio())
+                ->encode('webp', 80);
+
+            $path = 'uploads/' . Str::ulid() . "-$size.webp";
+            Storage::disk('public')->put($path, (string)$image);
+            $urls["$size"] = Storage::disk('public')->url($path);
+        }
+
+        $data = !empty($urls) ?
+            ['urls' => $urls] :
+            ['error' => ['message' => 'Upload failed!']];
+
+        return response()->json($data);
     }
 }
