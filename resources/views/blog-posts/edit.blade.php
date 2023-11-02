@@ -36,7 +36,11 @@
     <script src="{{asset('vendor/ckeditor/ckeditor.js')}}"></script>
     <script type="text/javascript">
         ClassicEditor
-            .create(document.querySelector('#body'))
+            .create(document.querySelector('#body'), {
+                simpleUpload: {
+                    uploadUrl: '/editor-uploads',
+                }
+            })
             .catch(error => {
                 console.error(error);
             });
